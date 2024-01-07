@@ -11,10 +11,6 @@ router.route("/").get((req, res) => {
     message: "/accounts Default Branch!",
   });
 });
-// /api/v1/accounts/demo
-router.route("/demo").get((req, res, next) => {
-  next(createError(501, "hello"));
-});
 // Accounts Error Handling:
 router
   .use((req, res, next) => {

@@ -21,9 +21,8 @@ app.get("/", (req, res) => {
   });
 });
 // API Routers:
-// modify versions in /routers/routes.js directory
-const apiRoutes = require("./routers/routes");
-app.use(apiRoutes);
+const v1API = require("./api/v1/routers/index");
+app.use("/api/v1", v1API);
 // Default Error Handling:
 app.use((req, res, next) => {
   // create an error 404 with message "This directory does not exist!" using createError
