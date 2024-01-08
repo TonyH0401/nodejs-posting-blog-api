@@ -3,7 +3,7 @@ const express = require("express");
 const createError = require("http-errors");
 const morgan = require("morgan");
 const path = require("path");
-// Custom Functions:
+// Customer Utils:
 // Environment Variable using .env:
 const port = process.env.BE_PORT || 7070;
 // Init App:
@@ -13,7 +13,7 @@ app.use(express.json());
 app.use(morgan("dev"));
 // Default Router:
 app.get("/", (req, res) => {
-  console.log("Default route");
+  console.log("Default Route!");
   return res.status(200).json({
     code: 1,
     success: true,

@@ -4,3 +4,6 @@
 - https://www.freecodecamp.org/news/rest-api-best-practices-rest-endpoint-design-examples/
 - https://dev.to/larswaechter/how-i-structure-my-rest-apis-11k4
 - https://www.freecodecamp.org/news/rest-api-best-practices-rest-endpoint-design-examples/
+- utils are for generic functions and reuseable
+- middlewares are for specific routes and functions 
+
