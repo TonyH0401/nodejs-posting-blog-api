@@ -1,5 +1,5 @@
 const router = require("express").Router();
-// Customer Middlewares, Utils:
+// Custom Middlewares, Utils:
 const {
   limiter100Req15Min,
   limiter10Req1Min,

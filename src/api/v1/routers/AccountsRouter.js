@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const createError = require("http-errors");
-// Customer Middlewares, Utils:
+// Custom Middlewares, Utils:
 // Import Models:
 // Accounts Routers:
 // /api/v1/accounts/
