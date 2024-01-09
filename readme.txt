@@ -6,4 +6,5 @@
 - https://www.freecodecamp.org/news/rest-api-best-practices-rest-endpoint-design-examples/
 - utils are for generic functions and reuseable
 - middlewares are for specific routes and functions 
+- https://stackoverflow.com/q/18875292/14723731, pass data through the next middlewares uses res.locals
 
