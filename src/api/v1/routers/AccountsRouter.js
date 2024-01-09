@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const createError = require("http-errors");
 // Custom Middlewares, Utils:
+const { registerAccount } = require("../middlewares/AccountsMiddlewares");
 // Import Models:
 // Accounts Routers:
 // /api/v1/accounts/
@@ -9,6 +10,14 @@ router.route("/").get((req, res) => {
     code: 1,
     success: true,
     message: "/accounts Default Branch!",
+  });
+});
+///api/v1/accounts/register
+router.route("/register").post(registerAccount, (req, res) => {
+  return res.status(200).json({
+    code: 1,
+    success: true,
+    message: "Login Successful!",
   });
 });
 // Accounts Error Handling:
