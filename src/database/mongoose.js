@@ -1,23 +1,23 @@
 const mongoose = require("mongoose");
 // Environment Variable .env:
 const mongodbURL = process.env.MONGODB;
+// Mongoose Options:
+const options = { useNewUrlParser: true, useUnifiedTopology: true };
 // Connect MongoDB using mongoose:
-function connectMongoDB() {
-  return new Promise((resolve, reject) => {
-    mongoose
-      .connect(mongodbURL, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      })
-      .then(() => {
-        console.log("> Connected to MongoDB");
-        resolve(true);
-      })
-      .catch((err) => {
-        console.error("> Error connecting to MongoDB:", err);
-        resolve(false);
-      });
-  });
+async function connectMongoDB() {
+  try {
+    await mongoose.connect(mongodbURL, options);
+    console.log(
+      "> Database connected with state: " +
+        mongoose.STATES[mongoose.connection.readyState]
+    );
+  } catch (error) {
+    console.log(
+      "> Failed to connect database with state: " +
+        mongoose.STATES[mongoose.connection.readyState]
+    );
+    console.log(error);
+  }
 }
 // Exports:
 module.exports = { connectMongoDB };

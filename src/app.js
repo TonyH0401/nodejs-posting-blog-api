@@ -40,41 +40,9 @@ app.use((err, req, res, next) => {
     message: err.message || "",
   });
 });
+// Connect Database:
+connectMongoDB();
 // Init Server:
-connectMongoDB()
-  .then((databaseConnected) => {
-    if (databaseConnected) {
-      app.listen(port, () => {
-        console.log(`> Website running at: http://localhost:${port}`);
-      });
-    } else {
-      console.log("Server not started due to database connection failure.");
-    }
-  })
-  .catch((error) => {
-    console.error("Error:", error);
-  });
-
-// let temp = connectMongoDB();
-// console.log(temp);
-// temp.then((res) => {
-//     console.log(res)
-// })
-// temp.then((res) => {
-// })
-// mongooseDB
-//   .connectMongoDB()
-//   .then((result) => {
-//     console.log(result);
-//     if (result.success) {
-//       console.log("> Database state: " + result.dbState);
-//       app.listen(port, () => {
-//         console.log(`> Website running at: http://localhost:${port}`);
-//       });
-//     } else {
-//       console.log("> Database state: " + result.dbState);
-//     }
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
+app.listen(port, () => {
+  console.log(`> Website running at http://localhost:${port}`);
+});
