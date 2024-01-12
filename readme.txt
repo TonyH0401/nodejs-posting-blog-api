@@ -15,3 +15,4 @@ when the fetch is resolved and if there are any errors, we send another error re
 - https://www.npmjs.com/package/mongoose#importing, usually you use await, but this link allow you to use .then(), but basically they
 are kinda the same because they are both used to handle async operations
 - in the official docs, you dont need await, but you need it in npmjs docs and you can use await and .then()
+- mongoose find by: https://mongoosejs.com/docs/queries.html

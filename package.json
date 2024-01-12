@@ -19,6 +19,7 @@
     "mongoose": "^8.0.0",
     "morgan": "^1.10.0",
     "sanitize-html": "^2.11.0",
+    "uuid": "^9.0.1",
     "validator": "^13.11.0",
     "zxcvbn": "^4.4.2"
   },
