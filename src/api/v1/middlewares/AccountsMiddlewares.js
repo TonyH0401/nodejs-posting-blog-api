@@ -6,6 +6,8 @@ const {
   validateEmailAddress,
   validateStrongPassword,
 } = require("../../../utils/dataValidators");
+const { encryptDataAES } = require("../../../utils/dataEncryption");
+const { decryptDataAES } = require("../../../utils/dataDecryption");
 // Import Models:
 const AccountsModel = require("../models/AccountsModel");
 // Input Data Exist Router:
@@ -73,15 +75,25 @@ async function accountCreation(req, res, next) {
   try {
     // generate uuidv4
     const userId = uuidv4().slice(0, 12).replace("-", "");
-    // create a new account
-    let newAccount = new AccountsModel({
+    // encrypt data of each property
+    const temp = encryptDataAES({
       firstName: firstName,
       lastName: lastName,
       emailAddress: emailAddress,
       accountPassword: accountPassword,
-      userId: userId,
     });
-    let result = await newAccount.save();
+    console.log(temp);
+    const decrypted = decryptDataAES(temp);
+    console.log(decrypted);
+    // create a new account
+    // let newAccount = new AccountsModel({
+    //   firstName: firstName,
+    //   lastName: lastName,
+    //   emailAddress: emailAddress,
+    //   accountPassword: accountPassword,
+    //   userId: userId,
+    // });
+    // let result = await newAccount.save();
     return res.status(200).json({
       code: 1,
       success: true,
