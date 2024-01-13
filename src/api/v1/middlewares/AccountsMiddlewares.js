@@ -105,7 +105,9 @@ async function getAccountByUserId(req, res, next) {
   const { userId } = req.params;
   try {
     // use .lean() to get POJOs, sacrifice mongoose .save(), getter and setter methods
-    let accountExisted = await AccountsModel.findOne({ userId: userId }).lean();
+    let accountExisted = await AccountsModel.findOne({ userId: userId })
+      .select({ accountPassword: 0 })
+      .lean();
     if (!accountExisted) {
       return next(createError(404, "Account does not exist!"));
     }
@@ -114,7 +116,7 @@ async function getAccountByUserId(req, res, next) {
       firstName: accountExisted.firstName,
       lastName: accountExisted.lastName,
       emailAddress: accountExisted.emailAddress,
-      accountPassword: accountExisted.accountPassword,
+      accountPassword: accountExisted.accountPassword || "",
     });
     // clone the original data
     let cloned = { ...accountExisted };
@@ -122,7 +124,7 @@ async function getAccountByUserId(req, res, next) {
     cloned.firstName = decryptedData.firstName;
     cloned.lastName = decryptedData.lastName;
     cloned.emailAddress = decryptedData.emailAddress;
-    cloned.accountPassword = decryptedData.accountPassword;
+    cloned.accountPassword = decryptedData.accountPassword || null;
     return res.status(200).json({
       code: 1,
       success: true,
@@ -137,6 +139,13 @@ async function updateAccountByUserId(req, res, next) {
   const { userId } = req.params;
   const { firstName, lastName } = req.body;
   try {
+    // sanitize data
+    let sanitizedDataResult = sanitizeHtmlInput({
+      firstName: firstName || "",
+      lastName: lastName || "",
+    });
+    if (!sanitizedDataResult.success)
+      return next(createError(400, sanitizedDataResult.message));
     let accountExisted = await AccountsModel.findOne({ userId: userId });
     if (!accountExisted)
       return next(createError(404, "Account Not Found! Unable to Update!"));
