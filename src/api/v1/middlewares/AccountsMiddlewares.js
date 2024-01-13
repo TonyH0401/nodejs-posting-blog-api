@@ -132,15 +132,32 @@ async function getAccountByUserId(req, res, next) {
     return next(createError(500, error.message));
   }
 }
-//
+// Account Update Information Router
 async function updateAccountByUserId(req, res, next) {
   const { userId } = req.params;
-  // const 
+  const { firstName, lastName } = req.body;
   try {
     let accountExisted = await AccountsModel.findOne({ userId: userId });
     if (!accountExisted)
       return next(createError(404, "Account Not Found! Unable to Update!"));
-
+    // encrypt new data
+    let encryptNewData = encryptDataAES({
+      firstName: firstName,
+      lastName: lastName,
+    });
+    // update new encrypted data
+    accountExisted.firstName = !firstName
+      ? accountExisted.firstName
+      : encryptNewData.firstName;
+    accountExisted.lastName = !lastName
+      ? accountExisted.lastName
+      : encryptNewData.lastName;
+    let result = await accountExisted.save();
+    return res.status(200).json({
+      code: 1,
+      success: true,
+      data: result,
+    });
   } catch (error) {
     return next(createError(500, error.message));
   }
@@ -152,4 +169,5 @@ module.exports = {
   accountExistedByEmail,
   accountCreation,
   getAccountByUserId,
+  updateAccountByUserId,
 };

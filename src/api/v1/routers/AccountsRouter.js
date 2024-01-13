@@ -7,6 +7,7 @@ const {
   accountExistedByEmail,
   accountCreation,
   getAccountByUserId,
+  updateAccountByUserId,
 } = require("../middlewares/AccountsMiddlewares");
 // Import Models:
 // Accounts Routers:
@@ -20,7 +21,10 @@ router
     accountCreation
   );
 // /api/v1/accounts/account/:userId
-router.route("/account/:userId").get(getAccountByUserId).put();
+router
+  .route("/account/:userId")
+  .get(getAccountByUserId)
+  .patch(updateAccountByUserId);
 // Accounts Error Handling:
 router
   .use((req, res, next) => {
