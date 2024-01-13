@@ -76,24 +76,21 @@ async function accountCreation(req, res, next) {
     // generate uuidv4
     const userId = uuidv4().slice(0, 12).replace("-", "");
     // encrypt data of each property
-    const temp = encryptDataAES({
+    const encryptedAccountData = encryptDataAES({
       firstName: firstName,
       lastName: lastName,
       emailAddress: emailAddress,
       accountPassword: accountPassword,
     });
-    console.log(temp);
-    const decrypted = decryptDataAES(temp);
-    console.log(decrypted);
     // create a new account
-    // let newAccount = new AccountsModel({
-    //   firstName: firstName,
-    //   lastName: lastName,
-    //   emailAddress: emailAddress,
-    //   accountPassword: accountPassword,
-    //   userId: userId,
-    // });
-    // let result = await newAccount.save();
+    let newAccount = new AccountsModel({
+      firstName: encryptedAccountData.firstName,
+      lastName: encryptedAccountData.lastName,
+      emailAddress: encryptedAccountData.emailAddress,
+      accountPassword: encryptedAccountData.accountPassword,
+      userId: userId,
+    });
+    let result = await newAccount.save();
     return res.status(200).json({
       code: 1,
       success: true,
@@ -103,10 +100,56 @@ async function accountCreation(req, res, next) {
     return next(createError(400, error.message));
   }
 }
+// Account Information Router:
+async function getAccountByUserId(req, res, next) {
+  const { userId } = req.params;
+  try {
+    // use .lean() to get POJOs, sacrifice mongoose .save(), getter and setter methods
+    let accountExisted = await AccountsModel.findOne({ userId: userId }).lean();
+    if (!accountExisted) {
+      return next(createError(404, "Account does not exist!"));
+    }
+    // decrypt the data
+    let decryptedData = decryptDataAES({
+      firstName: accountExisted.firstName,
+      lastName: accountExisted.lastName,
+      emailAddress: accountExisted.emailAddress,
+      accountPassword: accountExisted.accountPassword,
+    });
+    // clone the original data
+    let cloned = { ...accountExisted };
+    // update the cloned data with decrypted data
+    cloned.firstName = decryptedData.firstName;
+    cloned.lastName = decryptedData.lastName;
+    cloned.emailAddress = decryptedData.emailAddress;
+    cloned.accountPassword = decryptedData.accountPassword;
+    return res.status(200).json({
+      code: 1,
+      success: true,
+      data: cloned,
+    });
+  } catch (error) {
+    return next(createError(500, error.message));
+  }
+}
+//
+async function updateAccountByUserId(req, res, next) {
+  const { userId } = req.params;
+  // const 
+  try {
+    let accountExisted = await AccountsModel.findOne({ userId: userId });
+    if (!accountExisted)
+      return next(createError(404, "Account Not Found! Unable to Update!"));
+
+  } catch (error) {
+    return next(createError(500, error.message));
+  }
+}
 // Exports:
 module.exports = {
   accountInputDataExist,
   accountInputDataValidation,
   accountExistedByEmail,
   accountCreation,
+  getAccountByUserId,
 };

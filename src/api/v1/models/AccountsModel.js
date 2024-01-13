@@ -7,7 +7,7 @@ const AccountsModel = new Schema(
     // User Input Data:
     firstName: { type: String, required: true },
     lastName: { type: String, required: true },
-    // birthDay: { type: Date, required: true },
+    // birthDay: { type: Date },
     emailAddress: { type: String, required: true },
     accountPassword: { type: String, required: true },
     // Automatically Created Data:

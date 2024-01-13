@@ -6,17 +6,11 @@ const {
   accountInputDataExist,
   accountExistedByEmail,
   accountCreation,
+  getAccountByUserId,
 } = require("../middlewares/AccountsMiddlewares");
 // Import Models:
 // Accounts Routers:
-///api/v1/accounts/register
-// router.route("/register").post(registerAccount, (req, res) => {
-//   return res.status(200).json({
-//     code: 1,
-//     success: true,
-//     message: "Login Successful!",
-//   });
-// });
+// /api/v1/accounts/register
 router
   .route("/register")
   .post(
@@ -25,6 +19,8 @@ router
     accountExistedByEmail,
     accountCreation
   );
+// /api/v1/accounts/account/:userId
+router.route("/account/:userId").get(getAccountByUserId).put();
 // Accounts Error Handling:
 router
   .use((req, res, next) => {
