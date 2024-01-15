@@ -161,10 +161,11 @@ async function updateAccountByUserId(req, res, next) {
     if (!sanitizedDataResult.success)
       return next(createError(400, sanitizedDataResult.message));
     // check date format
-    if (!validateDateUtcIso8601Format(birthDay))
-      return next(
-        createError(400, "Date Wrong Format, Need UTC ISO 8601 Format!")
-      );
+    if (birthDay)
+      if (!validateDateUtcIso8601Format(birthDay))
+        return next(
+          createError(400, "Date Wrong Format, Need UTC ISO 8601 Format!")
+        );
     // check if account exist
     let accountExisted = await AccountsModel.findOne({ userId: userId });
     if (!accountExisted)
