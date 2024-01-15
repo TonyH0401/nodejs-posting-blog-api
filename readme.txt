@@ -16,3 +16,6 @@ when the fetch is resolved and if there are any errors, we send another error re
 are kinda the same because they are both used to handle async operations
 - in the official docs, you dont need await, but you need it in npmjs docs and you can use await and .then()
 - mongoose find by: https://mongoosejs.com/docs/queries.html
+- I have a commit version where the getAccountInformation function doesn't return accountPassword, the commit code is "ab447f4"
+or "ab447f40a562a7f0e8e03bd9b7a97d12f95c8ce4"
+

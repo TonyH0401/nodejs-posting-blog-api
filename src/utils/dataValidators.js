@@ -23,5 +23,14 @@ function validateStrongPassword(passwordInput) {
     message: passWarningSuggest,
   };
 }
+// Validate Date in UTC ISO-8601 Format
+function validateDateUtcIso8601Format(dateInput) {
+  const iso8601UtcPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
+  return iso8601UtcPattern.test(dateInput);
+}
 // Exports:
-module.exports = { validateEmailAddress, validateStrongPassword };
+module.exports = {
+  validateEmailAddress,
+  validateStrongPassword,
+  validateDateUtcIso8601Format,
+};
