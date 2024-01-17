@@ -196,6 +196,52 @@ async function updateAccountByUserId(req, res, next) {
     return next(createError(500, error.message));
   }
 }
+async function changeAccountPasswordByUserId(req, res, next) {
+  const { userId } = req.params;
+  const { oldAccountPassword1, oldAccountPassword2, newAccountPassword } =
+    req.body;
+  try {
+    // sanitize the data
+    const sanitizeInputResult = sanitizeHtmlInput({
+      oldAccountPassword1: oldAccountPassword1,
+      oldAccountPassword2: oldAccountPassword2,
+      newAccountPassword: newAccountPassword,
+    });
+    if (!sanitizeInputResult.success)
+      return next(createError(400, sanitizeInputResult.message));
+    // check if password1 and password2 match
+    if (oldAccountPassword1 != oldAccountPassword2)
+      return next(createError(400, "Repeated Password Do Not Match!"));
+    // find account by userId
+    let accountExisted = await AccountsModel.findOne({ userId: userId });
+    if (!accountExisted)
+      return next(createError(404, "Account Does Not Exist!"));
+    // check if password1 match the saved accountPassword in the database
+    const decryptOldPassword = decryptDataAES({
+      accountPassword: accountExisted.accountPassword,
+    });
+    if (decryptOldPassword.accountPassword != oldAccountPassword1)
+      return next(createError(400, "Old Password Does Not Match!"));
+    // check if new password is strong
+    const strongPasswordResult = validateStrongPassword(newAccountPassword);
+    if (strongPasswordResult.score < 3)
+      return next(createError(400, strongPasswordResult.message));
+    // encrypt new password
+    const encryptNewPassword = encryptDataAES({
+      accountPassword: newAccountPassword,
+    });
+    // save new password
+    accountExisted.accountPassword = encryptNewPassword.accountPassword;
+    let result = await accountExisted.save();
+    return res.status(200).json({
+      code: 1,
+      success: true,
+      data: result,
+    });
+  } catch (error) {
+    return next(createError(500, error.message));
+  }
+}
 // Exports:
 module.exports = {
   accountInputDataExist,
@@ -204,4 +250,5 @@ module.exports = {
   accountCreation,
   getAccountByUserId,
   updateAccountByUserId,
+  changeAccountPasswordByUserId,
 };

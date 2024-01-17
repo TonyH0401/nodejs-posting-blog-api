@@ -8,6 +8,7 @@ const {
   accountCreation,
   getAccountByUserId,
   updateAccountByUserId,
+  changeAccountPasswordByUserId,
 } = require("../middlewares/AccountsMiddlewares");
 // Import Models:
 // Accounts Routers:
@@ -25,6 +26,10 @@ router
   .route("/account/:userId")
   .get(getAccountByUserId)
   .patch(updateAccountByUserId);
+// /api/v1/accounts/account/:userId/change-password/
+router
+  .route("/account/:userId/change-password")
+  .patch(changeAccountPasswordByUserId);
 // Accounts Error Handling:
 router
   .use((req, res, next) => {
