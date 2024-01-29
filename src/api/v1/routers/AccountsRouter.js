@@ -30,6 +30,16 @@ router
 router
   .route("/account/:userId/change-password")
   .patch(changeAccountPasswordByUserId);
+//
+const { createJwtToken } = require("../../../utils/dataValidators");
+router.route("/demo").get(async (req, res) => {
+  const data = createJwtToken({ userName: "CosmosLee" }, 30);
+  console.log(data)
+  return res.status(200).json({
+    code: 1,
+    data: data,
+  });
+});
 // Accounts Error Handling:
 router
   .use((req, res, next) => {

@@ -147,7 +147,7 @@ async function getAccountByUserId(req, res, next) {
     return next(createError(500, error.message));
   }
 }
-// Account Update Information Router
+// Account Update Information Router:
 async function updateAccountByUserId(req, res, next) {
   const { userId } = req.params;
   const { firstName, lastName, birthDay } = req.body;
