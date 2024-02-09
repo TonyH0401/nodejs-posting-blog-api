@@ -1,23 +1,19 @@
 const mongoose = require("mongoose");
-// Environment Variable .env:
-const mongodbURL = process.env.MONGODB;
+// MongoDB Server Uri:
+const mongoDbUri = process.env.MONGODB;
 // Mongoose Options:
-const options = { useNewUrlParser: true, useUnifiedTopology: true };
-// Connect MongoDB using mongoose:
-async function connectMongoDB() {
-  try {
-    await mongoose.connect(mongodbURL, options);
-    console.log(
-      "> Database connected with state: " +
-        mongoose.STATES[mongoose.connection.readyState]
-    );
-  } catch (error) {
-    console.log(
-      "> Failed to connect database with state: " +
-        mongoose.STATES[mongoose.connection.readyState]
-    );
-    console.log(error);
-  }
-}
+const mongoDbOptions = { useNewUrlParser: true, useUnifiedTopology: true };
+// Connect MongoDB using Mongoose:
+const dbConnection = mongoose.createConnection(mongoDbUri, mongoDbOptions);
+// Listen for Connection Events:
+dbConnection.on("connected", () => {
+  console.log("> API 1 connected to MongoDB");
+});
+dbConnection.on("error", (err) => {
+  console.error("> API 1 connection error:", err);
+});
+dbConnection.on("disconnected", () => {
+  console.log("> API 1 disconnected from MongoDB");
+});
 // Exports:
-module.exports = { connectMongoDB };
+module.exports = { dbConnection };
