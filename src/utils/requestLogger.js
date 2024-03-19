@@ -1,7 +1,7 @@
 const morgan = require("morgan");
-// Request Logger Tiny:
+// Request Logger Mode Tiny:
 const reqLogTiny = morgan("tiny");
-// Request Logger Developer:
+// Request Logger Mode Developer:
 const reqLogDev = morgan("dev");
 // Request Logger Developer Error Only:
 const reqLogDevErrOnly = morgan("dev", {

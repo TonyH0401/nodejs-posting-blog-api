@@ -1,29 +1,35 @@
 require("dotenv").config();
 const express = require("express");
+const bodyParser = require("body-parser");
 const createError = require("http-errors");
 const path = require("path");
+const cors = require("cors");
 // Custom Utils:
 const { reqLogDev, reqLogDevErrOnly } = require("./utils/requestLogger");
 // Environment Variable (.env):
 const port = process.env.BE_PORT || 8080;
-// Init App:
+// Initialize App:
 const app = express();
 // App Use:
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(cors());
 app.use(reqLogDev);
 // Default Router:
 app.get("/", (req, res) => {
-  console.log("Default Route!");
+  const startupMessage = "Default Route! Server is Working!";
+  console.log("> " + startupMessage);
   return res.status(200).json({
     code: 1,
     success: true,
-    message: "Default Branch!",
+    message: startupMessage,
   });
 });
 // API Routers:
-const v1API = require("./api/v1/routes");
-app.use("/api/v1", v1API);
+// const v1API = require("./api/v1/routes");
+// app.use("/api/v1", v1API);
 // Default Error Handling:
 app.use((req, res, next) => {
   next(createError(404, "This directory does not exist!"));
@@ -38,7 +44,7 @@ app.use((err, req, res, next) => {
     message: err.message || "",
   });
 });
-// Init Server:
+// Initialize Server:
 app.listen(port, () => {
   console.log(`> Website running at http://localhost:${port}`);
 });
