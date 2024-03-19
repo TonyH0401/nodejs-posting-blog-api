@@ -29,4 +29,8 @@ const limit10Req5Min = rateLimit({
 });
 // Exports:
 module.exports = { limit100Req15Min, limit10Req5Min };
-/*  */
+/* the message section of rate-limiter can take in a differen range of values
+include json format, or html components, you can see it in the docs
+here: https://express-rate-limit.mintlify.app/reference/configuration#message
+or in my github here: https://github.com/TonyH0401/nodejs-myrecipe-noting-frontend/blob/master/app.js
+ */
