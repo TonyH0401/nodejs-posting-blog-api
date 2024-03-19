@@ -1,15 +1,14 @@
-const { default: mongoose } = require("mongoose");
 const Schema = require("mongoose").Schema;
 // Import Database Connection:
-const { dbConnection } = require("../../../database/mongoose");
+const { mongodbConn } = require("../../../database/mongoose");
 // Define AccountsModel:
-const AccountsModel = dbConnection.model(
+const AccountsModel = mongodbConn.model(
   "AccountsModel",
   new Schema(
     {
-      accountName: { type: String, required: true, default: "" },
-      accountPassword: { type: String, required: true, default: "123" },
-      accountEmail: { type: String, required: true, default: "" },
+      accountName: { type: String, required: true },
+      accountPassword: { type: String, required: true },
+      accountEmail: { type: String, required: true },
       isValidated: { type: Boolean, default: false },
     },
     { timestamps: true }

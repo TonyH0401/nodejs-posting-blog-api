@@ -2,10 +2,11 @@ require("dotenv").config();
 const express = require("express");
 const bodyParser = require("body-parser");
 const createError = require("http-errors");
-const path = require("path");
 const cors = require("cors");
+const path = require("path");
 // Custom Utils:
-const { reqLogDev, reqLogDevErrOnly } = require("./utils/requestLogger");
+const { reqLoggerDev } = require("./utils/requestLogger");
+const { limit10Req5Min } = require("./utils/requestLimiter");
 // Environment Variable (.env):
 const port = process.env.BE_PORT || 8080;
 // Initialize App:
@@ -16,9 +17,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
-app.use(reqLogDev);
+app.use(reqLoggerDev);
 // Default Router:
-app.get("/", (req, res) => {
+app.get("/", limit10Req5Min, (req, res) => {
   const startupMessage = "Default Route! Server is Working!";
   console.log("> " + startupMessage);
   return res.status(200).json({
@@ -28,8 +29,8 @@ app.get("/", (req, res) => {
   });
 });
 // API Routers:
-// const v1API = require("./api/v1/routes");
-// app.use("/api/v1", v1API);
+const v1API = require("./api/v1/routes");
+app.use("/api/v1", v1API);
 // Default Error Handling:
 app.use((req, res, next) => {
   next(createError(404, "This directory does not exist!"));

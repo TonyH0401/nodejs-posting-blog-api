@@ -1,19 +1,24 @@
 const mongoose = require("mongoose");
 // MongoDB Server Uri:
-const mongoDbUri = process.env.MONGODB;
-// Mongoose Options:
+const mongoDbUri = process.env.MONGODBURI;
+// MongoDB Server Name:
+const mongoDbServerName = process.env.MONGODBSERVERNAME;
+// MongdoDB Options using Mongoose:
 const mongoDbOptions = { useNewUrlParser: true, useUnifiedTopology: true };
-// Connect MongoDB using Mongoose:
-const dbConnection = mongoose.createConnection(mongoDbUri, mongoDbOptions);
+// Connect to MongoDB using Mongoose:
+const mongodbConn = mongoose.createConnection(
+  mongoDbUri + mongoDbServerName,
+  mongoDbOptions
+);
 // Listen for Connection Events:
-dbConnection.on("connected", () => {
+mongodbConn.on("connected", () => {
   console.log("> API 1 connected to MongoDB");
 });
-dbConnection.on("error", (err) => {
+mongodbConn.on("error", (err) => {
   console.error("> API 1 connection error:", err);
 });
-dbConnection.on("disconnected", () => {
+mongodbConn.on("disconnected", () => {
   console.log("> API 1 disconnected from MongoDB");
 });
 // Exports:
-module.exports = { dbConnection };
+module.exports = { mongodbConn };

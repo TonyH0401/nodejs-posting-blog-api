@@ -1,6 +1,6 @@
 const { rateLimit } = require("express-rate-limit");
-// 100 requests per 15 minutes:
-const limiter100Req15Min = rateLimit({
+// Limit 100 Requests per 15 Minutes:
+const limit100Req15Min = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
   standardHeaders: true,
@@ -10,12 +10,12 @@ const limiter100Req15Min = rateLimit({
     success: false,
     limiter: true,
     message:
-      "You have reached the request limit of 100, try again after 15 minutes",
+      "You have reached the request limit of 100, try again after 15 minutes!",
   },
 });
-// 10 requests per 1 minute:
-const limiter10Req1Min = rateLimit({
-  windowMs: 1 * 60 * 1000,
+// Limit 10 Requests per 5 Minutes:
+const limit10Req5Min = rateLimit({
+  windowMs: 5 * 60 * 1000,
   max: 10,
   standardHeaders: true,
   legacyHeaders: false,
@@ -24,8 +24,9 @@ const limiter10Req1Min = rateLimit({
     success: false,
     limiter: true,
     message:
-      "You have reached the request limit of 10, try again after 1 minute",
+      "You have reached the request limit of 10, try again after 5 minutes!",
   },
 });
 // Exports:
-module.exports = { limiter100Req15Min, limiter10Req1Min };
+module.exports = { limit100Req15Min, limit10Req5Min };
+/*  */

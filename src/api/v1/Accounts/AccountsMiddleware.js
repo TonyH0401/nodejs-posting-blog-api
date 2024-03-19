@@ -8,15 +8,15 @@ module.exports.createAccount = async (req, res, next) => {
   const { accountName, accountPassword, accountEmail } = req.body;
   try {
     let accountNew = new AccountsModel({
-      accountName: accountName || "",
+      accountName: accountName || "John Smith",
       accountPassword: accountPassword || "123",
-      accountEmail: accountEmail || "",
+      accountEmail: accountEmail || "johnsmith@test.com",
     });
     const accountCreated = await accountNew.save();
     return res.status(200).json({
       code: 1,
       success: true,
-      message: "Account Created!",
+      message: "New Account Created!",
       data: accountCreated,
     });
   } catch (error) {

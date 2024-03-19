@@ -2,10 +2,10 @@ const router = require("express").Router();
 const createError = require("http-errors");
 // Custom Utils:
 // Custom Middlewares:
-const { createAccount, getAllAccounts } = require("./AccountMiddleware");
+const { createAccount } = require("./AccountsMiddleware");
 // Accounts Router:
 //
-router.route("/").post(createAccount).get(getAllAccounts);
+router.route("/").post(createAccount);
 // Accounts Error Handling:
 router
   .use((req, res, next) => {
