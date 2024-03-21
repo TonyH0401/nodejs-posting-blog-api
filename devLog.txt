@@ -1,0 +1,4 @@
+###########
+- Logs for development.
+- Write changes during the development.
+- Log every changes made during a day
