@@ -1,12 +1,49 @@
 const createError = require("http-errors");
+const multer = require("multer");
+const fse = require("fs-extra");
+const path = require("path");
 // Custom Utils:
 const { toIsoDate } = require("../../../utils/dateFormatter");
 const { hashOneWayPass } = require("../../../utils/dataEncrypter");
 const { isStrongPass } = require("../../../utils/dataValidator");
+const {
+  fileStorage,
+  imageFileFilter,
+  fileSize5mb,
+} = require("../../../utils/multerOption");
 // Custom Middlewares:
 // Constant Declarations:
+const accountsImgTmpDir = "./public/AccountsImgTmp/";
+const accountsImgDir = "./public/AccountsImg/";
+const avatarUpload = multer({
+  storage: fileStorage(accountsImgTmpDir),
+  fileFilter: imageFileFilter,
+  limits: fileSize5mb,
+}).single("accountAvatar");
 // Import Models:
 const AccountsModel = require("./AccountsModel");
+// Upload Avatar Image Multer:
+module.exports.uploadAvatarImg = (req, res, next) => {
+  avatarUpload(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      return res
+        .status(404)
+        .json({ code: 0, success: false, error: err.message });
+    } else if (err) {
+      return res
+        .status(500)
+        .json({ code: 0, success: false, error: err.message });
+    }
+    if (!req.file) {
+      res.locals.fileExist = false;
+    } else {
+      res.locals.fileExist = true;
+      res.locals.fileName = req.file.filename;
+      res.locals.filePath = req.file.path;
+    }
+    return next();
+  });
+};
 // Create Account:
 module.exports.createAccount = async (req, res, next) => {
   // get the data from the req.body
