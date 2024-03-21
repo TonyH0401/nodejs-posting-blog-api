@@ -19,3 +19,9 @@ are kinda the same because they are both used to handle async operations
 - I have a commit version where the getAccountInformation function doesn't return accountPassword, the commit code is "ab447f4"
 or "ab447f40a562a7f0e8e03bd9b7a97d12f95c8ce4"
 - Renovation point: https://github.com/TonyH0401/posting-blog-be/tree/5e22c8a1b543e3040305be410dc4fa2a2cdc4865
+- Knowing that Nodejs goes from top to bottom in order, if you have /:id and /demo (in this order) it won't run /demo, it'll run 
+/:id every single time because you have changed the value of the params of /:id (which is :id) to the value "demo", 
+so everytime it will run to /:id but with "demo" as the value. But if you change the order to /demo and then /:id then it will run 
+both /demo and /:id separately. For example, "localhost:8080/api/v1/urls/url/demo" this will not run to /demo, it will run to
+/:id but with params value being "demo". Be carefule with anything params. If i have /:id, when I call /demo, /:id will be called
+but if i call /demo/demo then /demo/demo will be called not /:id

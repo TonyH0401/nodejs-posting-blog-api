@@ -6,10 +6,29 @@ const AccountsModel = mongodbConn.model(
   "AccountsModel",
   new Schema(
     {
-      accountName: { type: String, required: true },
-      accountPassword: { type: String, required: true },
-      accountEmail: { type: String, required: true },
+      accountFullName: { type: String, required: [true, "{PATH} is required"] },
+      accountUserName: {
+        type: String,
+        required: [true, "{PATH} is required"],
+        unique: true,
+      },
+      accountPassword: { type: String, required: [true, "{PATH} is required"] },
+      accountEmail: {
+        type: String,
+        required: [true, "{PATH} is required"],
+        unique: true,
+      },
+      accountGender: {
+        type: String,
+        enum: {
+          values: ["male", "female", "other"],
+          message: "{VALUE} is not supported",
+        },
+        default: "other",
+      },
+      accountBirthDay: { type: Date, required: [true, "{PATH} is required"] },
       isValidated: { type: Boolean, default: false },
+      accountAvatar: { type: String, default: "" },
     },
     { timestamps: true }
   )
