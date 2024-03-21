@@ -3,6 +3,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const createError = require("http-errors");
 const cors = require("cors");
+const helmet = require("helmet");
 const path = require("path");
 // Custom Utils:
 const { reqLoggerDev } = require("./utils/requestLogger");
@@ -17,6 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cors());
+app.use(helmet());
 app.use(reqLoggerDev);
 // Default Router:
 app.get("/", limit10Req5Min, (req, res) => {
