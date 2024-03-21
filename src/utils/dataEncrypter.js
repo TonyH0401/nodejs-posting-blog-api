@@ -1,7 +1,17 @@
 const CryptoJS = require("crypto-js");
-// Data Encryption Key Environment Variable:
-const encryptionKey = process.env.DATA_ENCRYPTION_KEY;
+const bcrypt = require("bcrypt");
 // Custom Utils:
+// Constant Declarations:
+const encryptionKey = process.env.DATA_ENCRYPTION_KEY;
+const saltRounds = 10;
+// Create 1 Way Password Hash:
+async function hashOneWayPass(barePassword) {
+  let hashedPasword = "";
+  await bcrypt.hash(barePassword, saltRounds).then((hashed) => {
+    hashedPasword = hashed;
+  });
+  return hashedPasword;
+}
 // Encrypt Data:
 /**
  * @param {Object} plainTextObject - The input is an object of plaintext
@@ -21,4 +31,4 @@ function encryptDataAES(plainTextObject) {
   return cloned;
 }
 // Exports:
-module.exports = { encryptDataAES };
+module.exports = { encryptDataAES, hashOneWayPass };

@@ -1,9 +1,9 @@
 const validator = require("validator");
 const zxcvbn = require("zxcvbn");
 const jwt = require("jsonwebtoken");
-// JWT Encryption Key Environment Variable:
-const jwtKey = process.env.JWT_ENCRYPTION_KEY;
 // Custom Utils:
+// Constant Declarations:
+const jwtKey = process.env.JWT_ENCRYPTION_KEY;
 // Validate Email Address:
 function validateEmailAddress(emailInput) {
   const options = {
@@ -12,19 +12,28 @@ function validateEmailAddress(emailInput) {
   return validator.isEmail(emailInput, options);
 }
 // Validate Strong Password:
-function validateStrongPassword(passwordInput) {
-  // password need 8 characters, num-alphabet, uppercase, lowercase and contains special character
-  const passValidationResult = zxcvbn(passwordInput);
-  // 0, 1, 2 is weak and unacceptable; 3, 4 is strong and acceptable
-  const passScore = passValidationResult.score;
-  const passWarningSuggest = [
-    passValidationResult.feedback.warning,
-    passValidationResult.feedback.suggestions.join(" "),
-  ].join("; ");
-  return {
-    score: passScore,
-    message: passWarningSuggest,
-  };
+function isStrongPass(barePassword) {
+  /*  a strong password needs: 
+        - 8 characters, 
+        - num-alphabet, 
+        - uppercase and lowercase 
+        - contains special character 
+   */
+  const passResult = zxcvbn(barePassword);
+  /*  password scoring lader:
+        0, 1, 2 is weak and unacceptable; 
+        3, 4 is strong and acceptable
+   */
+  // getting the score and the warning message
+  const passScore = passResult.score;
+  const passWarning = passResult.feedback.warning;
+  // complete
+  let result = { isStrong: true };
+  if (passScore < 3) {
+    result.isStrong = false;
+    result.message = passWarning;
+  }
+  return result;
 }
 // Validate Date in UTC ISO-8601 Format
 function validateDateUtcIso8601Format(dateInput) {
@@ -60,7 +69,7 @@ function createJwtToken(payload, expiresIn) {
 // Exports:
 module.exports = {
   validateEmailAddress,
-  validateStrongPassword,
+  isStrongPass,
   validateDateUtcIso8601Format,
   createJwtToken,
 };
