@@ -28,7 +28,10 @@ const AccountsModel = mongodbConn.model(
       },
       accountBirthDay: { type: Date, required: [true, "{PATH} is required"] },
       isValidated: { type: Boolean, default: false },
-      accountAvatar: { type: String, default: "" },
+      accountAvatar: {
+        cloudinaryPubId: { type: String, default: "" },
+        cloudinaryLink: { type: String, default: "" },
+      },
     },
     { timestamps: true }
   )

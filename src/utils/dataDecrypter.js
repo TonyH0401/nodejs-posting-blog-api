@@ -1,7 +1,13 @@
 const CryptoJS = require("crypto-js");
-// Data Encryption Key Environment Variable:
-const encryptionKey = process.env.DATA_ENCRYPTION_KEY;
+const bcrypt = require("bcrypt");
 // Custom Utils:
+// Constant Declarations:
+const encryptionKey = process.env.DATA_ENCRYPTION_KEY;
+const saltRounds = 10;
+// (Decrypt) Compare 1 Way Bcrypt Password:
+async function isMatchHashedBcryptPass(barePassword, hashedPassword) {
+  return await bcrypt.compare(barePassword, hashedPassword);
+}
 // Decrypt Data:
 /**
  * @param {Object} encryptedTextObject - The input is an encrypted data object
@@ -21,4 +27,4 @@ function decryptDataAES(encryptedTextObject) {
   return cloned;
 }
 // Exports:
-module.exports = { decryptDataAES };
+module.exports = { decryptDataAES, isMatchHashedBcryptPass };
