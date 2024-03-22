@@ -5,6 +5,7 @@ const createError = require("http-errors");
 const cors = require("cors");
 const helmet = require("helmet");
 const path = require("path");
+const chalk = require("chalk");
 // Custom Utils:
 const { reqLoggerDev } = require("./utils/requestLogger");
 const { limit10Req5Min } = require("./utils/requestLimiter");
@@ -49,5 +50,5 @@ app.use((err, req, res, next) => {
 });
 // Initialize Server:
 app.listen(port, () => {
-  console.log(`> Website running at http://localhost:${port}`);
+  console.log(chalk.blue(`> Website running at http://localhost:${port}`));
 });

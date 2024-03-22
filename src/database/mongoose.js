@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const chalk = require("chalk");
 // MongoDB Server Uri:
 const mongoDbUri = process.env.MONGODBURI;
 // MongoDB Server Name:
@@ -12,10 +13,10 @@ const mongodbConn = mongoose.createConnection(
 );
 // Listen for Connection Events:
 mongodbConn.on("connected", () => {
-  console.log("> API 1 connected to MongoDB");
+  console.log(chalk.green("> API 1 connected to MongoDB"));
 });
 mongodbConn.on("error", (err) => {
-  console.error("> API 1 connection error:", err);
+  console.error(chalk.red("> API 1 connection error:", err));
 });
 mongodbConn.on("disconnected", () => {
   console.log("> API 1 disconnected from MongoDB");
