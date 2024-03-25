@@ -367,8 +367,8 @@ module.exports.createAccountJwt = async (req, res, next) => {
     accountEmail: accountExist.accountEmail,
   };
   // set expiration date to 12h
-  // const expiresIn = 12 * 60 * 60;
-  const expiresIn = 5 * 60;
+  const expiresIn = 12 * 60 * 60;
+  // const expiresIn = 5 * 60;
   createJwt(payload, expiresIn, (err, token) => {
     if (err) {
       return next(createError(500, err.message));
