@@ -26,7 +26,6 @@ router.route("/account/:accountId/remove-avatar").delete(removeAvatarById);
 router.route("/account/:accountId/change-password").post(changePassById);
 router.route("/account/jwt/create").post(createAccountJwt);
 router.route("/account/jwt/verify").post(verifyAccountJwt);
-//
 // router.route("/otp-verify").get().post();
 // Accounts Error Handling:
 router

@@ -25,6 +25,7 @@ so everytime it will run to /:id but with "demo" as the value. But if you change
 both /demo and /:id separately. For example, "localhost:8080/api/v1/urls/url/demo" this will not run to /demo, it will run to
 /:id but with params value being "demo". Be carefule with anything params. If i have /:id, when I call /demo, /:id will be called
 but if i call /demo/demo then /demo/demo will be called not /:id
-- note for using multer. when uploading file, remember to have the correct property name because if not you will meet with
-Unpected field error. when not uploading file, it doesn't matter whether the property name is correct or appear at all 
-the property name will not be used but the process will continue so don't worry
+- Note for using Multer:
+    - When uploading file, remember to have the correct property name because if not you will meet with "unexpected field" error. 
+    - When not uploading file, it doesn't matter whether the "property name" is correct or being used at all 
+    the property name will not be used but the process will still continue so don't worry
