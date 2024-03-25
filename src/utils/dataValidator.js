@@ -40,36 +40,36 @@ function validateDateUtcIso8601Format(dateInput) {
   const iso8601UtcPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
   return iso8601UtcPattern.test(dateInput);
 }
-//
+// Create a JWT Token:
 /**
  * @param {Object} payload - The input is an object called "payload", e.g { foo: "bar" }
- * @param {Number} expiresIn - The input is a number, e.g 1 hr * 60 min * 60 sec = 1 hour
+ * @param {Number} expiresIn - The input is a number, e.g 1 (hr) * 60 (min) * 60 (sec) = 1 hour
  * @returns {Object} - The output is an object
  */
-function createJwtToken(payload, expiresIn) {
-  jwt.sign(
-    payload,
-    jwtKey,
-    { expiresIn: expiresIn || "1h" },
-    function (err, token) {
-      if (err) {
-        return {
-          success: false,
-          message: err.message,
-        };
-      }
-      // console.log(token)
-      return {
-        success: true,
-        message: token,
-      };
+function createJwt(payload, expiresIn, callback) {
+  jwt.sign(payload, jwtKey, { expiresIn: expiresIn || "1h" }, (err, token) => {
+    if (err) {
+      callback(err, null);
+    } else {
+      callback(null, token);
     }
-  );
+  });
+}
+// Verify JWT Token:
+function verifyJwt(token, callback) {
+  jwt.verify(token, jwtKey, (err, decoded) => {
+    if (err) {
+      callback(err, null);
+    } else {
+      callback(null, decoded);
+    }
+  });
 }
 // Exports:
 module.exports = {
   validateEmailAddress,
   isStrongPass,
   validateDateUtcIso8601Format,
-  createJwtToken,
+  createJwt,
+  verifyJwt,
 };
