@@ -11,6 +11,8 @@ const {
   patchAccountById,
   removeAvatarById,
   changePassById,
+  createAccountJwt,
+  verifyAccountJwt,
 } = require("./AccountsMiddleware");
 // Accounts Router:
 router.route("/account").post(uploadAvatarImg, createAccount).get();
@@ -22,9 +24,10 @@ router
   .delete(deleteAccountById);
 router.route("/account/:accountId/remove-avatar").delete(removeAvatarById);
 router.route("/account/:accountId/change-password").post(changePassById);
-router.route("/account/:accountId/verify/jwt").get().post();
+router.route("/account/jwt/create").post(createAccountJwt);
+router.route("/account/jwt/verify").post(verifyAccountJwt);
 //
-router.route("/otp-verify").get().post();
+// router.route("/otp-verify").get().post();
 // Accounts Error Handling:
 router
   .use((req, res, next) => {

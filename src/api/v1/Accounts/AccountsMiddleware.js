@@ -16,6 +16,7 @@ const {
   cloudinaryUploader,
   cloudinaryDestroyer,
 } = require("../../../utils/cloudinaryHandler");
+const { createJwt, verifyJwt } = require("../../../utils/dataValidator");
 // Custom Middlewares:
 // Constant Declarations:
 const accountsImgTmpDir = "./public/AccountsImgTmp/";
@@ -342,4 +343,72 @@ module.exports.changePassById = async (req, res, next) => {
   } catch (error) {
     return next(createError(500, error.message));
   }
+};
+// Create Account JWT:
+module.exports.createAccountJwt = async (req, res, next) => {
+  const { accountId } = req.body;
+  /*  I have to put this variable here because its data is assigned inside the try/catch
+      but it's used outside of try/catch.
+      Any variables declared and assigned data inside try/catch is out of scope once it's used
+      outside of the try/catch */
+  let accountExist;
+  try {
+    // check if account exist
+    accountExist = await AccountsModel.findById(accountId);
+    if (!accountExist) {
+      return next(createError(404, `Account ID: ${accountId} Not Found`));
+    }
+  } catch (error) {
+    return next(createError(500, error.message));
+  }
+  // prepare payload
+  const payload = {
+    accountId: accountId,
+    accountEmail: accountExist.accountEmail,
+  };
+  // set expiration date to 12h
+  // const expiresIn = 12 * 60 * 60;
+  const expiresIn = 5 * 60;
+  createJwt(payload, expiresIn, (err, token) => {
+    if (err) {
+      return next(createError(500, err.message));
+    } else {
+      const jwtToken = token;
+      return res.status(200).json({
+        code: 1,
+        success: true,
+        message: `JWT for Account ID: ${accountId} created`,
+        data: jwtToken,
+      });
+    }
+  });
+};
+// Verify Jwt Account:
+module.exports.verifyAccountJwt = async (req, res, next) => {
+  const { accountJwt } = req.body;
+  verifyJwt(accountJwt, async (err, decoded) => {
+    if (err) {
+      return next(createError(500, err.message));
+    } else {
+      const decodedPayload = decoded;
+      try {
+        const accountUpdated = await AccountsModel.findByIdAndUpdate(
+          decodedPayload.accountId,
+          { isValidated: true },
+          { new: true }
+        );
+        if (!accountUpdated) {
+          return next(createError(404, `Account ID Not Found to Update`));
+        }
+        return res.status(200).json({
+          code: 1,
+          success: true,
+          message: "Account JWT Verified",
+          data: accountUpdated,
+        });
+      } catch (error) {
+        return next(createError(500, error.message));
+      }
+    }
+  });
 };
