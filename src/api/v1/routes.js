@@ -11,5 +11,8 @@ const { mongodbConn } = require("../../database/mongoose");
 // Acounts Router: /api/v1/accounts/...
 const AccountsRouter = require("./Accounts/AccountsRouter");
 router.use("/accounts", limit100Req15Min, AccountsRouter);
+// Posts Router: /api/v1/posts/...
+const PostsRouter = require("./Posts/PostsRouter");
+router.use("/posts", limit100Req15Min, PostsRouter);
 // Exports:
 module.exports = router;

@@ -3,7 +3,7 @@ const slugify = require("slugify");
 const createError = require("http-errors");
 // Import Database Connection:
 const { mongodbConn } = require("../../../database/mongoose");
-// Define PostsModel:
+// Define PostsSchema:
 const PostsSchema = new Schema(
   {
     postTitle: { type: String, required: [true, "{PATH} is required"] },
@@ -13,49 +13,28 @@ const PostsSchema = new Schema(
       ref: "AccountsModel",
       required: [true, "{PATH} is required"],
     },
-    postSlug: { type: String, default: "" },
+    postSlug: { type: String, unique: true, default: "" },
     postBanner: {
       cloudinaryPubId: { type: String, default: "" },
       cloudinaryLink: { type: String, default: "" },
     },
-    // remember to delete this section
-    idEx: { type: Number, unique: true },
   },
   { timestamps: true }
 );
-// Triggers:
-/* Mongoose Middleware works at Schema level not Model level */
-PostsSchema.post("save", async function (doc, next) {
-  // I am testing error handling using .post hook
-  // because the doc is run after saving, you need to have doc and next\
-  // doc is used for the doc, next is used for next hook
+/* Mongoose's Middleware/Hooks works at Schema level not Model level */
+// Posts Triggers/Middleware/Hooks Section:
+// 
+PostsSchema.pre("save", async function (next) {
   try {
-    if (doc.idEx == 2) {
-      throw new Error("Yolo?");
+    console.log(1);
+    if (this.isNew || this.isModified("postTitle")) {
+      console.log(2);
+      this.postSlug = slugify(this.postTitle, { lower: true });
+      return next();
     }
-    console.log("inside hook");
-    return next();
-  } catch (err) {
-    console.log("inside catch method");
-    return next(createError(500, err.message));
+  } catch (error) {
+    return next(createError(500, error.message));
   }
-  // if (err) {
-  //   console.log("inside save");
-  //   return next(createError(500, err.message));
-  // }
-  // console.log("does it goes? 1");
-  // try {
-  //   // if (doc.idEx == 2) {
-  //   //   throw new Error("WTF???????");
-  //   // }
-  //   console.log("does it goes?");
-  //   doc.postSlug = slugify(doc.postTitle, { lower: true });
-  //   doc.save();
-  //   return next();
-  // } catch (error) {
-  //   console.log("inside save trycatch");
-  //   return next(createError(500, error.message));
-  // }
 });
 // Exports:
 module.exports = mongodbConn.model("PostsModel", PostsSchema);
