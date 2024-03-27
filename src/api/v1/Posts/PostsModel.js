@@ -7,6 +7,7 @@ const { mongodbConn } = require("../../../database/mongoose");
 const PostsSchema = new Schema(
   {
     postTitle: { type: String, required: [true, "{PATH} is required"] },
+    postHeader: { type: String, required: [true, "{PATH} is required"] },
     postContent: { type: String, required: [true, "{PATH} is required"] },
     postAuthor: {
       type: Schema.Types.ObjectId,
@@ -21,15 +22,19 @@ const PostsSchema = new Schema(
   },
   { timestamps: true }
 );
-/* Mongoose's Middleware/Hooks works at Schema level not Model level */
-// Posts Triggers/Middleware/Hooks Section:
-// 
+/*  
+  Posts Triggers/Middleware/Hooks Section:
+  Mongoose's Middleware/Hooks works at Schema level not Model level 
+*/
+// Create "postSlug" Before Save Pre Hook:
 PostsSchema.pre("save", async function (next) {
   try {
-    console.log(1);
     if (this.isNew || this.isModified("postTitle")) {
-      console.log(2);
-      this.postSlug = slugify(this.postTitle, { lower: true });
+      const cleanedTitle = this.postTitle.replace(/[^\w\s]/g, "");
+      this.postSlug = slugify(cleanedTitle, {
+        lower: true,
+        trim: true,
+      });
       return next();
     }
   } catch (error) {

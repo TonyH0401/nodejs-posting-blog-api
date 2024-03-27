@@ -2,17 +2,17 @@ const router = require("express").Router();
 const createError = require("http-errors");
 // Custom Utils:
 // Custom Middlewares:
-const { createPost } = require("./PostsMiddleware");
+const {
+  uploadBannerImg,
+  createPost,
+  getAllPost,
+  getPostById,
+  deletePostById,
+} = require("./PostsMiddleware");
 // Posts Router:
-router
-  .route("/demo")
-  .get((req, res) => {
-    return res.status(200).json({
-      code: 1,
-      success: true,
-    });
-  })
-  .post(createPost);
+router.route("/post").post(uploadBannerImg, createPost).get();
+router.route("/all").get(getAllPost);
+router.route("/post/:postId").get(getPostById).patch().delete(deletePostById);
 // Posts Error Handling:
 router
   .use((req, res, next) => {
