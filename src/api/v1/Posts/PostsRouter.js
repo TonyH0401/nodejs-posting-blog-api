@@ -8,11 +8,16 @@ const {
   getAllPost,
   getPostById,
   deletePostById,
+  patchPostById,
 } = require("./PostsMiddleware");
 // Posts Router:
 router.route("/post").post(uploadBannerImg, createPost).get();
 router.route("/all").get(getAllPost);
-router.route("/post/:postId").get(getPostById).patch().delete(deletePostById);
+router
+  .route("/post/:postId")
+  .get(getPostById)
+  .patch(uploadBannerImg, patchPostById)
+  .delete(deletePostById);
 // Posts Error Handling:
 router
   .use((req, res, next) => {

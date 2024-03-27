@@ -189,4 +189,78 @@ module.exports.deletePostById = async (req, res, next) => {
     return next(createError(500, error.message));
   }
 };
-// 
+//
+module.exports.patchPostById = async (req, res, next) => {
+  const { postId } = req.params;
+  const { postTitle, postHeader, postContent, postAuthor } = req.body;
+  try {
+    // check if author exist, if author need to be updated
+    if (postAuthor) {
+      const authorExist = await AccountsModel.findById(postAuthor);
+      if (!authorExist) {
+        return next(createError(404, `Author ID: ${postAuthor} Not Found`));
+      }
+    }
+    // check if post exist
+    const postExist = await PostsModel.findById(postId);
+    if (!postExist) {
+      return next(createError(404, `Post ID: ${postAuthor} Not Found`));
+    }
+    // update post
+    postExist.postTitle = postTitle || postExist.postTitle;
+    postExist.postHeader = postHeader || postExist.postHeader;
+    postExist.postContent = postContent || postExist.postContent;
+    postExist.postAuthor = postAuthor || postExist.postAuthor;
+    // save updated information
+    await postExist.save();
+    // check if upload file exist
+    if (res.locals.fileExist) {
+      // create src and dest for post
+      const src = postsImgTmpDir + res.locals.fileName;
+      const dest = postsImgDir + postExist._id + "/" + res.locals.fileName;
+      // move file from tempDir to mainDir
+      await fse.move(src, dest);
+      // update path for delete file, must be located here after moving file
+      res.locals.filePath = dest;
+      // upload to cloudinary
+      const cloudinaryUploadResult = await cloudinaryUploader(dest);
+      if (!cloudinaryUploadResult.success) {
+        return next(createError(500, cloudinaryUploadResult.message));
+      }
+      // delete in cloudinary
+      if (postExist.postBanner.cloudinaryPubId) {
+        const cloudinaryDeleteionResult = await cloudinaryDestroyer(
+          postExist.postBanner.cloudinaryPubId
+        );
+        if (!cloudinaryDeleteionResult.success) {
+          return next(createError(500, cloudinaryDeleteionResult.message));
+        }
+      }
+      // update cloudinary url to post
+      postExist.postBanner.cloudinaryPubId =
+        cloudinaryUploadResult.data.public_id;
+      postExist.postBanner.cloudinaryLink =
+        cloudinaryUploadResult.data.secure_url;
+      await postExist.save();
+    }
+    const populatedPost = await postExist.populate({
+      path: "postAuthor",
+      select: {
+        accountAvatar: 1,
+        _id: 1,
+        accountUserName: 1,
+      },
+    });
+    return res.status(200).json({
+      code: 1,
+      success: true,
+      message: `Post ID: ${postId} Updated`,
+      data: populatedPost,
+    });
+  } catch (error) {
+    return next(createError(500, error.message));
+  } finally {
+    // delete file from system using filePath
+    if (res.locals.fileExist) await fse.remove(res.locals.filePath);
+  }
+};
