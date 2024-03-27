@@ -9,6 +9,7 @@ const {
   getPostById,
   deletePostById,
   patchPostById,
+  getAllPostsByAccountId,
 } = require("./PostsMiddleware");
 // Posts Router:
 router.route("/post").post(uploadBannerImg, createPost).get();
@@ -18,6 +19,7 @@ router
   .get(getPostById)
   .patch(uploadBannerImg, patchPostById)
   .delete(deletePostById);
+router.route("/author/:accountId").get(getAllPostsByAccountId);
 // Posts Error Handling:
 router
   .use((req, res, next) => {

@@ -189,7 +189,7 @@ module.exports.deletePostById = async (req, res, next) => {
     return next(createError(500, error.message));
   }
 };
-//
+// Patch Post By Id:
 module.exports.patchPostById = async (req, res, next) => {
   const { postId } = req.params;
   const { postTitle, postHeader, postContent, postAuthor } = req.body;
@@ -243,6 +243,7 @@ module.exports.patchPostById = async (req, res, next) => {
         cloudinaryUploadResult.data.secure_url;
       await postExist.save();
     }
+    // populate field
     const populatedPost = await postExist.populate({
       path: "postAuthor",
       select: {
@@ -251,6 +252,7 @@ module.exports.patchPostById = async (req, res, next) => {
         accountUserName: 1,
       },
     });
+    // complete
     return res.status(200).json({
       code: 1,
       success: true,
@@ -262,5 +264,34 @@ module.exports.patchPostById = async (req, res, next) => {
   } finally {
     // delete file from system using filePath
     if (res.locals.fileExist) await fse.remove(res.locals.filePath);
+  }
+};
+// Get All Posts By Account Id:
+module.exports.getAllPostsByAccountId = async (req, res, next) => {
+  const { accountId } = req.params;
+  try {
+    const accountExist = await AccountsModel.findById(accountId);
+    if (!accountExist) {
+      return next(createError(404, `Account ID: ${accountId} Not Found`));
+    }
+    const accountPosts = await PostsModel.find({
+      postAuthor: accountExist._id,
+    }).populate({
+      path: "postAuthor",
+      select: {
+        accountAvatar: 1,
+        accountUserName: 1,
+        accountEmail: 1,
+      },
+    });
+    return res.status(200).json({
+      code: 1,
+      success: true,
+      message: `All Posts by Author ID: ${accountId} Found`,
+      counter: accountPosts.length,
+      data: accountPosts,
+    });
+  } catch (error) {
+    return next(createError(500, error.message));
   }
 };
