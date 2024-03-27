@@ -50,5 +50,7 @@ app.use((err, req, res, next) => {
 });
 // Initialize Server:
 app.listen(port, () => {
-  console.log(chalk.green(`> Website running at http://localhost:${port}`));
+  console.log(
+    chalk.green.bgGreen.whiteBright.bold(`> Website running at http://localhost:${port}`)
+  );
 });
