@@ -2,11 +2,22 @@ const router = require("express").Router();
 const createError = require("http-errors");
 // Custom Utils:
 // Custom Middlewares:
+const {
+  createComment,
+  getCommentById,
+  partialDeleteCommentById,
+} = require("./CommentsMiddleware");
 // Comments Router:
-// Posts Error Handling:
+router.route("/comment").post(createComment).get();
+router
+  .route("/comment/:commentId")
+  .get(getCommentById)
+  .patch()
+  .delete(partialDeleteCommentById);
+// Comments Error Handling:
 router
   .use((req, res, next) => {
-    next(createError(404, "This /posts directory does not exist!"));
+    next(createError(404, "This /comments directory does not exist!"));
   })
   .use((err, req, res, next) => {
     let errorStatus = err.status || 404;
