@@ -13,7 +13,7 @@ const mongodbConn = mongoose.createConnection(
 );
 // Listen for Connection Events:
 mongodbConn.on("connected", () => {
-  console.log(chalk.green("> API 1 connected to MongoDB"));
+  console.log(chalk.whiteBright.bgGreen.bold("> API 1 connected to MongoDB"));
 });
 mongodbConn.on("error", (err) => {
   console.error(chalk.red("> API 1 connection error:", err));
