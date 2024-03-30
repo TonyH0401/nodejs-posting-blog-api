@@ -17,5 +17,8 @@ router.use("/posts", limit100Req15Min, PostsRouter);
 // Comment Router: /api/v1/comment/...
 const CommentsRouter = require("./Comments/CommentsRouter");
 router.use("/comments", limit100Req15Min, CommentsRouter);
+// CommentV2 Router: /api/v1/comment2/...
+const CommentsV2Router = require("./CommentsV2/CommentsV2Router");
+router.use("/commentsV2", limit100Req15Min, CommentsV2Router);
 // Exports:
 module.exports = router;
