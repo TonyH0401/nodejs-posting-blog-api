@@ -1,4 +1,4 @@
 - Instead of designing multiple layers of comment like reddit, we design it to be 2 layers only like facebook
 instagram and tiktok.
-- We use the same Schema structure as the original Comment Model but to handle  those who reply to layer 2 comment 
+- We use the same Schema structure as the original Comment Model but to handle those who reply to layer 2 comment 
 we add an "accountRecipient" for indication.

@@ -70,11 +70,27 @@ module.exports.createCommentV2 = async (req, res, next) => {
 };
 // All the get comments need to be grouped together
 // Get Comment By Id:
-module.exports.getCommentById = async (req, res, next) => {
+module.exports.getCommentV2ById = async (req, res, next) => {
   const { commentV2Id } = req.params;
   try {
     // check if comment exist
-    const commentExist = await CommentsV2Model.findById(commentV2Id);
+    const commentExist = await CommentsV2Model.findById(commentV2Id)
+      .populate({
+        path: "commentAuthor",
+        select: {
+          _id: 1,
+          accountAvatar: 1,
+          accountUserName: 1,
+        },
+      })
+      .populate({
+        path: "accountRecipient",
+        select: {
+          _id: 1,
+          accountAvatar: 1,
+          accountUserName: 1,
+        },
+      });
     if (!commentExist) {
       return next(createError(404, `Comment ID: ${commentV2Id} Not Found`));
     }
@@ -87,6 +103,37 @@ module.exports.getCommentById = async (req, res, next) => {
         data: commentExist,
       });
     }
+    // return the parent comment with the list of all its children in creation asc order
+    const populateParent = await commentExist.populate({
+      path: "children",
+      populate: [
+        {
+          path: "commentAuthor",
+          select: {
+            _id: 1,
+            accountAvatar: 1,
+            accountUserName: 1,
+          },
+        },
+        {
+          path: "accountRecipient",
+          select: {
+            _id: 1,
+            accountAvatar: 1,
+            accountUserName: 1,
+          },
+        },
+      ],
+      options: {
+        sort: { createdAt: 1 },
+      },
+    });
+    return res.status(200).json({
+      code: 1,
+      success: true,
+      message: `Parent Comment ID: ${commentV2Id} Found`,
+      data: populateParent,
+    });
   } catch (error) {
     return next(createError(500, error.message));
   }
