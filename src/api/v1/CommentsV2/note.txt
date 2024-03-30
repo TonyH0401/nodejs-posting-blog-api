@@ -1,4 +1,20 @@
 - Instead of designing multiple layers of comment like reddit, we design it to be 2 layers only like facebook
 instagram and tiktok.
-- We use the same Schema structure as the original Comment Model but to handle those who reply to layer 2 comment 
-we add an "accountRecipient" for indication.
+- We use the same schema structure as the original "Comment Model" but to handle those who reply to layer 2 comment 
+(a.k.a child comment replies to child comment) we add an "accountRecipient" for indication.
+- We have tested in tiktok, the whole children comments will be deleted if the parent comment is deleted, child comment
+replies to children comment, if deleted will have no effect, meaning the later comment section still exist.
+
+
+return await CommentsModel.findByIdAndDelete(commentId)
+    .then(async (comment) => {
+      await CommentsModel.deleteMany({ _id: { $in: comment.children } });
+      return res.status(200).json({
+        code: 1,
+        success: true,
+      });
+    })
+    .catch((error) => {
+      console.log(error.message);
+      return next(createError(500, error.message));
+    });

@@ -139,4 +139,12 @@ module.exports.getCommentV2ById = async (req, res, next) => {
   }
 };
 // Get Comment By Post Id:
+module.exports.getCommentV2ByPostId = async (req, res, next) => {
+  const { postId } = req.params;
+  try {
+    
+  } catch (error) {
+    return next(createError(500, error.message));
+  }
+};
 // Get Comment By Author Id:
