@@ -5,7 +5,7 @@ const createError = require("http-errors");
 const {
   createComment,
   getCommentById,
-  partialDeleteCommentById,
+  deleteCommentById,
 } = require("./CommentsMiddleware");
 // Comments Router:
 router.route("/comment").post(createComment).get();
@@ -13,7 +13,7 @@ router
   .route("/comment/:commentId")
   .get(getCommentById)
   .patch()
-  .delete(partialDeleteCommentById);
+  .delete(deleteCommentById);
 // Comments Error Handling:
 router
   .use((req, res, next) => {

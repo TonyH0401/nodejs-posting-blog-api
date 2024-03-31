@@ -29,7 +29,7 @@ const CommentsSchema = new Schema(
   },
   { timestamps: true }
 );
-// Pre Hook to Save Children to Parent:
+// Pre Hook to Save Children Comment to Parent Comment:
 CommentsSchema.pre("save", async function (next) {
   /* 
     we put the model in here because we want to mitigate the circular requirement problem.
@@ -40,7 +40,7 @@ CommentsSchema.pre("save", async function (next) {
   const CommentsModel = require("./CommentsModel");
   try {
     if (this.parent) {
-      console.log(1);
+      console.log("inside pre hook, saving a comment");
       const parentExist = await CommentsModel.findById(this.parent);
       if (!parentExist) {
         return next(
@@ -53,6 +53,42 @@ CommentsSchema.pre("save", async function (next) {
         { new: true }
       );
     }
+    return next();
+  } catch (error) {
+    return next(createError(500, error.message));
+  }
+});
+// Pre Hook for Find and Delete Comment:
+// https://chat.openai.com/share/41855dff-0097-4e82-946a-6afeff276828
+CommentsSchema.pre("deleteOne", async function (next) {
+  const CommentsModel = require("./CommentsModel");
+  try {
+    const thisChildrenList = (
+      await CommentsModel.findById(this.getFilter()._id)
+    ).children;
+    // check if there is a children comment list, if there is start deleting recursively
+    if (thisChildrenList.length > 0) {
+      // Iterate through children and remove them recursively
+      for (const childId of thisChildrenList) {
+        const childComment = await CommentsModel.findById(childId);
+        if (childComment) {
+          await childComment.deleteOne();
+        }
+      }
+    }
+    // Remove references to this comment in parent comments
+    const parentId = (await CommentsModel.findById(this.getFilter()._id))
+      .parent;
+    if (parentId) {
+      const parentComment = await CommentsModel.findById(parentId);
+      if (parentComment) {
+        await CommentsModel.updateOne(
+          { _id: parentId },
+          { $pull: { children: this.getFilter()._id } }
+        );
+      }
+    }
+    console.log("inside the pre hook of delete comment");
     return next();
   } catch (error) {
     return next(createError(500, error.message));

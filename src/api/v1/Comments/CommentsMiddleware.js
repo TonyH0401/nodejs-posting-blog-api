@@ -51,9 +51,8 @@ module.exports.createComment = async (req, res, next) => {
 module.exports.getCommentById = async (req, res, next) => {
   const { commentId } = req.params;
   try {
-    const commentExist = await CommentsModel.findById(commentId)
-      .populate("parent")
-      .populate("children");
+    // because this version is the multiple layers version, we just need to get the general information
+    const commentExist = await CommentsModel.findById(commentId);
     if (!commentExist) {
       return next(createError(404, `Comment ID: ${commentId} Not Found`));
     }
@@ -67,37 +66,59 @@ module.exports.getCommentById = async (req, res, next) => {
     return next(createError(500, error.message));
   }
 };
+// Delete Comment By Id:
+/*
+  because it has multiple layers, this will need a recursion deleteion,
+  we defined something like that inside the pre hook
+*/
+module.exports.deleteCommentById = async (req, res, next) => {
+  const { commentId } = req.params;
+  try {
+    /*
+      because the comment is recursively saved, if we want to delete a point of a comment,
+      we have to delete the children comments recursively, starts from the smallest one,
+      after that, we can delete the current comment
+    */
+    const commentExist = await CommentsModel.findById(commentId).exec();
+    if (!commentExist) {
+      return next(createError(404, `Comment ID: ${commentId} Not Found`));
+    }
+    // this is where the pre hook for "deleteOne" starts
+    await commentExist.deleteOne();
+    // this method also works, it's the same as the one above, but this one is more redundant
+    // await commentExist.deleteOne({ _id: commentExist._id });
+    return res.status(200).json({
+      code: 1,
+      success: true,
+      message: `Comment ID: ${commentId} Deleted`,
+    });
+  } catch (error) {
+    return next(createError(500, error.message));
+  }
+};
+
 // "Delete" Comment By Id:
 /* 
   I want to create like reddit where the content maybe deleted but the tree is still there.
   So, I will delete the content and the author but anything else will be find.
 */
-module.exports.partialDeleteCommentById = async (req, res, next) => {
-  const { commentId } = req.params;
-  try {
-    const commentUpdated = await CommentsModel.findByIdAndUpdate(commentId, {
-      commentAuthor: null,
-      commentContent: null,
-    });
-    if (!commentUpdated) {
-      return next(createError(404, `Comment ID: ${commentId} Not Found`));
-    }
-    return res.status(200).json({
-      code: 1,
-      success: true,
-      message: `Comment ID: ${commentId} Deleted`,
-      data: commentUpdated,
-    });
-  } catch (error) {
-    return next(createError(500, error.message));
-  }
-};
-// Patch Comment By Id:mm
-module.exports.patchCommentById = async (req, res, next) => {
-  const { commentId } = req.params;
-  const {} = req.body;
-  try {
-  } catch (error) {
-    return next(createError(500, error.message));
-  }
-};
+// module.exports.partialDeleteCommentById = async (req, res, next) => {
+//   const { commentId } = req.params;
+//   try {
+//     const commentUpdated = await CommentsModel.findByIdAndUpdate(commentId, {
+//       commentAuthor: null,
+//       commentContent: null,
+//     });
+//     if (!commentUpdated) {
+//       return next(createError(404, `Comment ID: ${commentId} Not Found`));
+//     }
+//     return res.status(200).json({
+//       code: 1,
+//       success: true,
+//       message: `Comment ID: ${commentId} Deleted`,
+//       data: commentUpdated,
+//     });
+//   } catch (error) {
+//     return next(createError(500, error.message));
+//   }
+// };

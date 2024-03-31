@@ -1,5 +1,0 @@
-##############
-- Make development logs, write changes during the development.
-- Log for when commit is too long to make.
-- Log every changes made during a day, the log must include day + changes.
-##############
