@@ -7,6 +7,7 @@ const {
   getCommentById,
   deleteCommentById,
   patchCommentById,
+  partialDeleteCommentById,
 } = require("./CommentsMiddleware");
 // Comments Router:
 router.route("/comment").post(createComment).get();
@@ -15,6 +16,7 @@ router
   .get(getCommentById)
   .patch(patchCommentById)
   .delete(deleteCommentById);
+router.route("/comment/partial-remove/:commentId").delete(partialDeleteCommentById);
 // Comments Error Handling:
 router
   .use((req, res, next) => {

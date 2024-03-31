@@ -115,19 +115,43 @@ module.exports.patchCommentById = async (req, res, next) => {
     return res.status(200).json({
       code: 1,
       success: true,
-      message: `Comment ID: ${commentId} Deleted`,
+      message: `Comment ID: ${commentId} Updated`,
       data: commentUpdated,
     });
   } catch (error) {
     return next(createError(500, error.message));
   }
 };
-// Partially Delete
+// Partially Delete Comment By Id:
 /* 
   I want to create like reddit where the content maybe deleted but the tree is still there.
   So, I will "delete" the content and the author (maybe) but anything else will be find.
 */
-// const commentUpdated = await CommentsModel.findByIdAndUpdate(commentId, {
-//   commentAuthor: null,
-//   commentContent: null,
-// });
+module.exports.partialDeleteCommentById = async (req, res, next) => {
+  const { commentId } = req.params;
+  try {
+    const payload = {
+      commentAuthor: null,
+      commentContent: null,
+    };
+    const options = {
+      new: true,
+    };
+    const commentUpdated = await CommentsModel.findByIdAndUpdate(
+      commentId,
+      payload,
+      options
+    );
+    if (!commentUpdated) {
+      return next(createError(404, `Comment ID: ${commentId} Not Found`));
+    }
+    return res.status(200).json({
+      code: 1,
+      success: true,
+      message: `Comment ID: ${commentId} Removed`,
+      data: commentUpdated,
+    });
+  } catch (error) {
+    return next(createError(500, error.message));
+  }
+};
