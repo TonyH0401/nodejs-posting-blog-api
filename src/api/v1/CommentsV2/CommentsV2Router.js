@@ -8,13 +8,14 @@ const {
   getCommentV2ByPostId,
   getCommentV2ByAuthorId,
   deleteCommentV2ById,
+  patchCommentV2ById,
 } = require("./CommentsV2Middleware");
 // Comments Router:
 router.route("/commentV2").post(createCommentV2).get();
 router
   .route("/commentV2/:commentV2Id")
   .get(getCommentV2ById)
-  .patch()
+  .patch(patchCommentV2ById)
   .delete(deleteCommentV2ById);
 router.route("/post/:postId").get(getCommentV2ByPostId);
 router.route("/author/:authorId").get(getCommentV2ByAuthorId);

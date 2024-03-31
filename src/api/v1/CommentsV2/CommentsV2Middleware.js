@@ -261,3 +261,28 @@ module.exports.deleteCommentV2ById = async (req, res, next) => {
     return next(createError(500, error.message));
   }
 };
+// Patch Comment By Id:
+module.exports.patchCommentV2ById = async (req, res, next) => {
+  const { commentV2Id } = req.params;
+  const { commentContent } = req.body;
+  try {
+    const payload = {
+      commentContent: commentContent,
+    };
+    const commentUpdated = await CommentsV2Model.findByIdAndUpdate(
+      commentV2Id,
+      payload
+    );
+    if (!commentUpdated) {
+      return next(createError(404, `Comment ID: ${commentV2Id} Not Found`));
+    }
+    return res.status(200).json({
+      code: 1,
+      success: true,
+      message: `Comment ID: ${commentV2Id} Updated`,
+      data: commentUpdated,
+    });
+  } catch (error) {
+    return next(createError(500, error.message));
+  }
+};
