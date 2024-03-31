@@ -6,13 +6,14 @@ const {
   createComment,
   getCommentById,
   deleteCommentById,
+  patchCommentById,
 } = require("./CommentsMiddleware");
 // Comments Router:
 router.route("/comment").post(createComment).get();
 router
   .route("/comment/:commentId")
   .get(getCommentById)
-  .patch()
+  .patch(patchCommentById)
   .delete(deleteCommentById);
 // Comments Error Handling:
 router

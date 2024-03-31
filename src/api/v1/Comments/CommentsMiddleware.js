@@ -96,29 +96,38 @@ module.exports.deleteCommentById = async (req, res, next) => {
     return next(createError(500, error.message));
   }
 };
-
-// "Delete" Comment By Id:
+// Patch Comment By Id: only allow you to change the comment content
+module.exports.patchCommentById = async (req, res, next) => {
+  const { commentId } = req.params;
+  const { commentContent } = req.body;
+  try {
+    const payload = {
+      commentContent: commentContent,
+    };
+    const commentUpdated = await CommentsModel.findByIdAndUpdate(
+      commentId,
+      payload,
+      { new: true }
+    );
+    if (!commentUpdated) {
+      return next(createError(404, `Comment ID: ${commentId} Not Found`));
+    }
+    return res.status(200).json({
+      code: 1,
+      success: true,
+      message: `Comment ID: ${commentId} Deleted`,
+      data: commentUpdated,
+    });
+  } catch (error) {
+    return next(createError(500, error.message));
+  }
+};
+// Partially Delete
 /* 
   I want to create like reddit where the content maybe deleted but the tree is still there.
-  So, I will delete the content and the author but anything else will be find.
+  So, I will "delete" the content and the author (maybe) but anything else will be find.
 */
-// module.exports.partialDeleteCommentById = async (req, res, next) => {
-//   const { commentId } = req.params;
-//   try {
-//     const commentUpdated = await CommentsModel.findByIdAndUpdate(commentId, {
-//       commentAuthor: null,
-//       commentContent: null,
-//     });
-//     if (!commentUpdated) {
-//       return next(createError(404, `Comment ID: ${commentId} Not Found`));
-//     }
-//     return res.status(200).json({
-//       code: 1,
-//       success: true,
-//       message: `Comment ID: ${commentId} Deleted`,
-//       data: commentUpdated,
-//     });
-//   } catch (error) {
-//     return next(createError(500, error.message));
-//   }
-// };
+// const commentUpdated = await CommentsModel.findByIdAndUpdate(commentId, {
+//   commentAuthor: null,
+//   commentContent: null,
+// });
