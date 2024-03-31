@@ -226,3 +226,38 @@ module.exports.getCommentV2ByAuthorId = async (req, res, next) => {
     return next(createError(500, error.message));
   }
 };
+// Delete Comment By Id:
+module.exports.deleteCommentV2ById = async (req, res, next) => {
+  const { commentV2Id } = req.params;
+  try {
+    // check if the parent exist
+    const commentExist = await CommentsV2Model.findById(commentV2Id);
+    if (!commentExist) {
+      return next(createError(404, `Comment ID: ${commentV2Id} Not Found`));
+    }
+    // if parent property is null -> it's a parent, if it isn't null it's a child comment
+    if (commentExist.parent != null) {
+      const parentId = commentExist.parent;
+      // the delete the child comment without effect other child comments
+      await CommentsV2Model.findByIdAndDelete(commentV2Id);
+      // remove the child reference in the parent
+      await CommentsV2Model.updateOne(
+        { _id: parentId },
+        { $pull: { children: commentV2Id } }
+      );
+    } else {
+      // remove all the children comment
+      await CommentsV2Model.deleteMany({ _id: { $in: commentExist.children } });
+      // remove the parent comment
+      await CommentsV2Model.findByIdAndDelete(commentV2Id);
+    }
+    return res.status(200).json({
+      code: 1,
+      success: true,
+      message: `Comment ID: ${commentV2Id} Deleted`,
+      data: commentExist,
+    });
+  } catch (error) {
+    return next(createError(500, error.message));
+  }
+};

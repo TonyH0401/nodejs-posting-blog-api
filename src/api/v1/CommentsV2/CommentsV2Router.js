@@ -7,12 +7,17 @@ const {
   getCommentV2ById,
   getCommentV2ByPostId,
   getCommentV2ByAuthorId,
+  deleteCommentV2ById,
 } = require("./CommentsV2Middleware");
 // Comments Router:
 router.route("/commentV2").post(createCommentV2).get();
-router.route("/commentV2/:commentV2Id").get(getCommentV2ById).patch().delete();
-router.route("/post/:postId").get(getCommentV2ByPostId).patch().delete();
-router.route("/author/:authorId").get(getCommentV2ByAuthorId).patch().delete();
+router
+  .route("/commentV2/:commentV2Id")
+  .get(getCommentV2ById)
+  .patch()
+  .delete(deleteCommentV2ById);
+router.route("/post/:postId").get(getCommentV2ByPostId);
+router.route("/author/:authorId").get(getCommentV2ByAuthorId);
 // Comments Error Handling:
 router
   .use((req, res, next) => {
