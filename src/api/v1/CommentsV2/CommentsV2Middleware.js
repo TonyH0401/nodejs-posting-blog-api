@@ -142,9 +142,87 @@ module.exports.getCommentV2ById = async (req, res, next) => {
 module.exports.getCommentV2ByPostId = async (req, res, next) => {
   const { postId } = req.params;
   try {
-    
+    const postExist = await PostsModel.findById(postId);
+    if (!postExist) {
+      return next(createError(404, `Post ID: ${postId} Not Found`));
+    }
+    // get only parent comments
+    const parentCommentByPostId = await CommentsV2Model.find({
+      commentPost: postId,
+      parent: null,
+      accountRecipient: null,
+    })
+      .populate({
+        path: "commentAuthor",
+        select: {
+          _id: 1,
+          accountAvatar: 1,
+          accountUserName: 1,
+        },
+      })
+      .populate({
+        path: "children",
+        populate: [
+          {
+            path: "commentAuthor",
+            select: {
+              _id: 1,
+              accountAvatar: 1,
+              accountUserName: 1,
+            },
+          },
+          {
+            path: "accountRecipient",
+            select: {
+              _id: 1,
+              accountAvatar: 1,
+              accountUserName: 1,
+            },
+          },
+        ],
+        options: {
+          // sorting inside the children comments
+          sort: {
+            createdAt: 1,
+          },
+        },
+      })
+      .sort({
+        // sorting outside the parent comments
+        createdAt: 1,
+      });
+    return res.status(200).json({
+      code: 1,
+      success: true,
+      message: `Comments for Post ID: ${postId} Found`,
+      counter: parentCommentByPostId.length,
+      data: parentCommentByPostId,
+    });
   } catch (error) {
     return next(createError(500, error.message));
   }
 };
 // Get Comment By Author Id:
+module.exports.getCommentV2ByAuthorId = async (req, res, next) => {
+  const { authorId } = req.params;
+  try {
+    const authorExist = await AccountsModel.findById(authorId);
+    if (!authorExist) {
+      return next(createError(404, `Author ID: ${authorId} Not Found`));
+    }
+    const authorComments = await CommentsV2Model.find({
+      commentAuthor: authorId,
+    }).sort({
+      createdAt: 1,
+    });
+    return res.status(200).json({
+      code: 1,
+      success: true,
+      message: `Comments for Author ID: ${authorId} Found`,
+      counter: authorComments.length,
+      data: authorComments,
+    });
+  } catch (error) {
+    return next(createError(500, error.message));
+  }
+};

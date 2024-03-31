@@ -2,12 +2,17 @@ const router = require("express").Router();
 const createError = require("http-errors");
 // Custom Utils:
 // Custom Middlewares:
-const { createCommentV2, getCommentV2ById } = require("./CommentsV2Middleware");
+const {
+  createCommentV2,
+  getCommentV2ById,
+  getCommentV2ByPostId,
+  getCommentV2ByAuthorId,
+} = require("./CommentsV2Middleware");
 // Comments Router:
 router.route("/commentV2").post(createCommentV2).get();
 router.route("/commentV2/:commentV2Id").get(getCommentV2ById).patch().delete();
-router.route("/post/:postId").get().patch().delete();
-router.route("/author/:authorId").get().patch().delete();
+router.route("/post/:postId").get(getCommentV2ByPostId).patch().delete();
+router.route("/author/:authorId").get(getCommentV2ByAuthorId).patch().delete();
 // Comments Error Handling:
 router
   .use((req, res, next) => {
