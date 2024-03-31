@@ -286,3 +286,23 @@ module.exports.patchCommentV2ById = async (req, res, next) => {
     return next(createError(500, error.message));
   }
 };
+//
+module.exports.commentPagination = async (req, res, next) => {
+  const page = req.query.page || 0;
+  const docPerPage = 3;
+  // const {}
+  try {
+    const comments = await CommentsV2Model.find()
+      .sort({ createdAt: 1 })
+      .skip(page * docPerPage)
+      .limit(docPerPage);
+    return res.status(200).json({
+      code: 1,
+      success: true,
+      message: `Total of ${comments.length} comment for page ${page} found`,
+      data: comments,
+    });
+  } catch (error) {
+    return next(createError(500, error.message));
+  }
+};

@@ -9,9 +9,10 @@ const {
   getCommentV2ByAuthorId,
   deleteCommentV2ById,
   patchCommentV2ById,
+  commentPagination,
 } = require("./CommentsV2Middleware");
 // Comments Router:
-router.route("/commentV2").post(createCommentV2).get();
+router.route("/commentV2").post(createCommentV2).get(commentPagination);
 router
   .route("/commentV2/:commentV2Id")
   .get(getCommentV2ById)
