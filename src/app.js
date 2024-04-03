@@ -25,6 +25,14 @@ app.use(reqLoggerDev);
 app.get("/", limit10Req5Min, (req, res) => {
   const startupMessage = "Default Route! Server is Working!";
   console.log("> " + startupMessage);
+  // get all the headers' data
+  // console.log(req.headers);
+  // get user-agent from headers
+  console.log(req.headers["user-agent"]);
+  // based on this https://expressjs.com/en/5x/api.html#req.get, this method also work
+  console.log(req.get("User-Agent"));
+  // this should work if the header has content-type, probably on post HTTP
+  // console.log(req.get("Content-Type"));
   return res.status(200).json({
     code: 1,
     success: true,
@@ -51,6 +59,8 @@ app.use((err, req, res, next) => {
 // Initialize Server:
 app.listen(port, () => {
   console.log(
-    chalk.whiteBright.bgGreen.bold(`> Website running at http://localhost:${port}`)
+    chalk.whiteBright.bgGreen.bold(
+      `> Website running at http://localhost:${port}`
+    )
   );
 });
